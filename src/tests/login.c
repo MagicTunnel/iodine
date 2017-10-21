@@ -18,7 +18,7 @@
 #include <check.h>
 #include <string.h>
 
-#include "login.h"
+#include <protocol/login.h>
 #include "test.h"
 
 START_TEST(test_login_hash) {

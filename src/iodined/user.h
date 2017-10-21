@@ -18,6 +18,9 @@
 #ifndef __USER_H__
 #define __USER_H__
 
+#include <os/common.h>
+#include <protocol/dns.h>
+
 #define USERS 16
 
 #define OUTPACKETQ_LEN 4 /* Note: 16 users * 1 packet = 1MB */

@@ -16,8 +16,8 @@
  */
 
 #include <check.h>
-#include <common.h>
 #include <netdb.h>
+#include <os/common.h>
 #include <sys/socket.h>
 #include <unistd.h>
 

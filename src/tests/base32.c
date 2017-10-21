@@ -21,8 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <protocol/encoding.h>
 #include "base32.h"
-#include "encoding.h"
 #include "test.h"
 
 #define TUPLES 5

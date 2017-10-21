@@ -36,10 +36,10 @@
 #include <pwd.h>
 #endif
 
+#include <os/common.h>
+#include <os/tun.h>
+#include <os/util.h>
 #include "client.h"
-#include "common.h"
-#include "tun.h"
-#include "util.h"
 
 #ifdef WINDOWS32
 WORD req_version = MAKEWORD(2, 2);

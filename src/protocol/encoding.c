@@ -15,9 +15,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "encoding.h"
 #include <string.h>
-#include "common.h"
+
+#include <os/common.h>
+#include "encoding.h"
 
 int build_hostname(char *buf, size_t buflen, const char *data, const size_t datalen, const char *topdomain,
                    struct encoder *encoder, int maxlen) {

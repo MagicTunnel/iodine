@@ -30,10 +30,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
-#include "dns.h"
-#include "encoding.h"
-#include "read.h"
+#include <os/common.h>
+#include <protocol/dns.h>
+#include <protocol/encoding.h>
+#include <protocol/read.h>
 #include "test.h"
 
 START_TEST(test_read_putshort) {

@@ -51,8 +51,6 @@ extern const unsigned char raw_header[RAW_HDR_LEN];
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-#define QUERY_NAME_SIZE 256
-
 #if defined IP_MTU_DISCOVER
 /* Linux */
 #define IP_OPT_DONT_FRAG IP_MTU_DISCOVER
@@ -67,12 +65,6 @@ extern const unsigned char raw_header[RAW_HDR_LEN];
 #define DONT_FRAG_VALUE 1
 #endif
 
-#define T_PRIVATE 65399
-/* Undefined RR type; "private use" range, see
- * http://www.bind9.net/dns-parameters */
-#define T_UNSET 65432
-/* Unused RR type, never actually sent */
-
 struct packet {
     int len;              /* Total packet length */
     int sentlen;          /* Length of chunk currently transmitted */
@@ -80,20 +72,6 @@ struct packet {
     char data[64 * 1024]; /* The data */
     char seqno;           /* The packet sequence number */
     char fragment;        /* Fragment index */
-};
-
-struct query {
-    char name[QUERY_NAME_SIZE];
-    unsigned short type;
-    unsigned short rcode;
-    unsigned short id;
-    struct sockaddr_storage destination;
-    socklen_t dest_len;
-    struct sockaddr_storage from;
-    socklen_t fromlen;
-    unsigned short id2;
-    struct sockaddr_storage from2;
-    socklen_t fromlen2;
 };
 
 enum connection { CONN_RAW_UDP = 0, CONN_DNS_NULL, CONN_MAX };

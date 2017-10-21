@@ -30,10 +30,10 @@
 #include <arpa/nameser_compat.h>
 #endif
 
+#include <os/common.h>
+#include <protocol/dns.h>
+#include <protocol/encoding.h>
 #include "base32.h"
-#include "common.h"
-#include "dns.h"
-#include "encoding.h"
 #include "test.h"
 
 static void dump_packet(char *, size_t);

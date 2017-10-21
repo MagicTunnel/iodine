@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <zlib.h>
 
-#include "common.h"
+#include <os/common.h>
 
 #ifdef WINDOWS32
 #include <winsock2.h>
@@ -49,15 +49,15 @@
 #include <syslog.h>
 #endif
 
-#include "base128.h"
-#include "base32.h"
-#include "base64.h"
-#include "base64u.h"
-#include "dns.h"
-#include "encoding.h"
+#include <os/tun.h>
+#include <protocol/dns.h>
+#include <protocol/encoding.h>
+#include <protocol/login.h>
+#include <utils/base128.h>
+#include <utils/base32.h>
+#include <utils/base64.h>
+#include <utils/base64u.h>
 #include "fw_query.h"
-#include "login.h"
-#include "tun.h"
 #include "user.h"
 #include "version.h"
 

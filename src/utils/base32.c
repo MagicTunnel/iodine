@@ -21,7 +21,7 @@
 #include <string.h>
 
 #include "base32.h"
-#include "encoding.h"
+#include "encoder.h"
 
 #define BLKSIZE_RAW 5
 #define BLKSIZE_ENC 8

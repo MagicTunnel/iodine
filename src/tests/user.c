@@ -23,10 +23,10 @@
 #include <sys/socket.h>
 #include <time.h>
 
-#include "common.h"
-#include "encoding.h"
+#include <iodined/user.h>
+#include <os/common.h>
+#include <protocol/encoding.h>
 #include "test.h"
-#include "user.h"
 
 START_TEST(test_init_users) {
     in_addr_t ip;

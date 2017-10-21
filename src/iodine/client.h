@@ -15,19 +15,28 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __DNS_H__
-#define __DNS_H__
+#ifndef __CLIENT_H__
+#define __CLIENT_H__
 
-#include "common.h"
+#include <os/common.h>
 
-typedef enum { QR_QUERY = 0, QR_ANSWER = 1 } qr_t;
+void client_init();
+void client_stop();
 
-extern int dnsc_use_edns0;
+enum connection client_get_conn();
+const char *client_get_raw_addr();
 
-int dns_encode(char *, size_t, struct query *, qr_t, char *, size_t);
-int dns_encode_ns_response(char *buf, size_t buflen, struct query *q, char *topdomain);
-int dns_encode_a_response(char *buf, size_t buflen, struct query *q);
-unsigned short dns_get_id(char *packet, size_t packetlen);
-int dns_decode(char *, size_t, struct query *, qr_t, char *, size_t);
+void client_set_nameserver(struct sockaddr_storage *, int);
+void client_set_topdomain(const char *cp);
+void client_set_password(const char *cp);
+int client_set_qtype(char *qtype);
+char *client_get_qtype();
+void client_set_downenc(char *encoding);
+void client_set_selecttimeout(int select_timeout);
+void client_set_lazymode(int lazy_mode);
+void client_set_hostname_maxlen(int i);
 
-#endif /* _DNS_H_ */
+int client_handshake(int dns_fd, int raw_mode, int autodetect_frag_size, int fragsize);
+int client_tunnel(int tun_fd, int dns_fd);
+
+#endif

@@ -45,16 +45,17 @@
 #include <pwd.h>
 #endif
 
-#include "base128.h"
-#include "base32.h"
-#include "base64.h"
-#include "base64u.h"
+#include <os/common.h>
+#include <os/tun.h>
+#include <protocol/dns.h>
+#include <protocol/encoding.h>
+#include <protocol/login.h>
+#include <utils/base128.h>
+#include <utils/base32.h>
+#include <utils/base64.h>
+#include <utils/base64u.h>
+
 #include "client.h"
-#include "common.h"
-#include "dns.h"
-#include "encoding.h"
-#include "login.h"
-#include "tun.h"
 #include "version.h"
 
 static void handshake_lazyoff(int dns_fd);

@@ -15,26 +15,20 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __CLIENT_H__
-#define __CLIENT_H__
+#ifndef _ENCODER_H_
 
-void client_init();
-void client_stop();
+#define _ENCODER_H_
 
-enum connection client_get_conn();
-const char *client_get_raw_addr();
+#include <stddef.h>
 
-void client_set_nameserver(struct sockaddr_storage *, int);
-void client_set_topdomain(const char *cp);
-void client_set_password(const char *cp);
-int client_set_qtype(char *qtype);
-char *client_get_qtype();
-void client_set_downenc(char *encoding);
-void client_set_selecttimeout(int select_timeout);
-void client_set_lazymode(int lazy_mode);
-void client_set_hostname_maxlen(int i);
-
-int client_handshake(int dns_fd, int raw_mode, int autodetect_frag_size, int fragsize);
-int client_tunnel(int tun_fd, int dns_fd);
+struct encoder {
+    char name[8];
+    int (*encode)(char *, size_t *, const void *, size_t);
+    int (*decode)(void *, size_t *, const char *, size_t);
+    int (*places_dots)(void);
+    int (*eats_dots)(void);
+    int (*blocksize_raw)(void);
+    int (*blocksize_encoded)(void);
+};
 
 #endif

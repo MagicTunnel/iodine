@@ -16,7 +16,7 @@
 
 #include <check.h>
 
-#include "fw_query.h"
+#include <iodined/fw_query.h>
 #include "test.h"
 
 START_TEST(test_fw_query_simple) {
