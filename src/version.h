@@ -23,4 +23,3 @@
 #define PROTOCOL_VERSION 0x00000502
 
 #endif /* _VERSION_H_ */
-

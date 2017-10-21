@@ -23,11 +23,11 @@
 #define RAW_HDR_IDENT_LEN 3
 #define RAW_HDR_CMD 3
 #define RAW_HDR_CMD_LOGIN 0x10
-#define RAW_HDR_CMD_DATA  0x20
-#define RAW_HDR_CMD_PING  0x30
+#define RAW_HDR_CMD_DATA 0x20
+#define RAW_HDR_CMD_PING 0x30
 
-#define RAW_HDR_CMD_MASK  0xF0
-#define RAW_HDR_USR_MASK  0x0F
+#define RAW_HDR_CMD_MASK 0xF0
+#define RAW_HDR_USR_MASK 0x0F
 #define RAW_HDR_GET_CMD(x) ((x)[RAW_HDR_CMD] & RAW_HDR_CMD_MASK)
 #define RAW_HDR_GET_USR(x) ((x)[RAW_HDR_CMD] & RAW_HDR_USR_MASK)
 extern const unsigned char raw_header[RAW_HDR_LEN];
@@ -35,72 +35,68 @@ extern const unsigned char raw_header[RAW_HDR_LEN];
 #ifdef WINDOWS32
 #include "windows.h"
 #else
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <err.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #endif
 
 #define DNS_PORT 53
 
 #ifndef MIN
-#define MIN(a,b) ((a)<(b)?(a):(b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 #ifndef MAX
-#define MAX(a,b) ((a)>(b)?(a):(b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
 #define QUERY_NAME_SIZE 256
 
 #if defined IP_MTU_DISCOVER
-  /* Linux */
-# define IP_OPT_DONT_FRAG IP_MTU_DISCOVER
-# define DONT_FRAG_VALUE IP_PMTUDISC_DO
+/* Linux */
+#define IP_OPT_DONT_FRAG IP_MTU_DISCOVER
+#define DONT_FRAG_VALUE IP_PMTUDISC_DO
 #elif defined IP_DONTFRAG
-  /* FreeBSD */
-# define IP_OPT_DONT_FRAG IP_DONTFRAG
-# define DONT_FRAG_VALUE 1
+/* FreeBSD */
+#define IP_OPT_DONT_FRAG IP_DONTFRAG
+#define DONT_FRAG_VALUE 1
 #elif defined IP_DONTFRAGMENT
-  /* Winsock2 */
-# define IP_OPT_DONT_FRAG IP_DONTFRAGMENT
-# define DONT_FRAG_VALUE 1
+/* Winsock2 */
+#define IP_OPT_DONT_FRAG IP_DONTFRAGMENT
+#define DONT_FRAG_VALUE 1
 #endif
 
 #define T_PRIVATE 65399
-/* Undefined RR type; "private use" range, see http://www.bind9.net/dns-parameters */
+/* Undefined RR type; "private use" range, see
+ * http://www.bind9.net/dns-parameters */
 #define T_UNSET 65432
 /* Unused RR type, never actually sent */
 
-struct packet
-{
-	int len;		/* Total packet length */
-	int sentlen;		/* Length of chunk currently transmitted */
-	int offset;		/* Current offset */
-	char data[64*1024];	/* The data */
-	char seqno;		/* The packet sequence number */
-	char fragment;		/* Fragment index */
+struct packet {
+    int len;              /* Total packet length */
+    int sentlen;          /* Length of chunk currently transmitted */
+    int offset;           /* Current offset */
+    char data[64 * 1024]; /* The data */
+    char seqno;           /* The packet sequence number */
+    char fragment;        /* Fragment index */
 };
 
 struct query {
-	char name[QUERY_NAME_SIZE];
-	unsigned short type;
-	unsigned short rcode;
-	unsigned short id;
-	struct sockaddr_storage destination;
-	socklen_t dest_len;
-	struct sockaddr_storage from;
-	socklen_t fromlen;
-	unsigned short id2;
-	struct sockaddr_storage from2;
-	socklen_t fromlen2;
+    char name[QUERY_NAME_SIZE];
+    unsigned short type;
+    unsigned short rcode;
+    unsigned short id;
+    struct sockaddr_storage destination;
+    socklen_t dest_len;
+    struct sockaddr_storage from;
+    socklen_t fromlen;
+    unsigned short id2;
+    struct sockaddr_storage from2;
+    socklen_t fromlen2;
 };
 
-enum connection {
-	CONN_RAW_UDP = 0,
-	CONN_DNS_NULL,
-	CONN_MAX
-};
+enum connection { CONN_RAW_UDP = 0, CONN_DNS_NULL, CONN_MAX };
 
 void check_superuser(void (*usage_fn)(void));
 char *format_addr(struct sockaddr_storage *sockaddr, int sockaddr_len);
@@ -115,7 +111,7 @@ void do_setcon(char *);
 void do_detach();
 void do_pidfile(char *);
 
-void read_password(char*, size_t);
+void read_password(char *, size_t);
 
 int check_topdomain(char *, char **);
 
@@ -130,7 +126,7 @@ void errx(int eval, const char *fmt, ...);
 void warnx(const char *fmt, ...);
 #endif
 
-int recent_seqno(int , int);
+int recent_seqno(int, int);
 
 #ifndef WINDOWS32
 void fd_set_close_on_exec(int fd);

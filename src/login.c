@@ -21,8 +21,8 @@
 #ifdef WINDOWS32
 #include "windows.h"
 #else
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #endif
 
 #include "md5.h"
@@ -30,30 +30,26 @@
 /*
  * Needs a 16byte array for output, and 32 bytes password
  */
-void
-login_calculate(char *buf, int buflen, const char *pass, int seed)
-{
-	unsigned char temp[32];
-	md5_state_t ctx;
-	int *ix;
-	int i;
-	int k;
+void login_calculate(char *buf, int buflen, const char *pass, int seed) {
+    unsigned char temp[32];
+    md5_state_t ctx;
+    int *ix;
+    int i;
+    int k;
 
-	if (buflen < 16)
-		return;
+    if (buflen < 16)
+        return;
 
-	memcpy(temp, pass, 32);
-	ix = (int*) temp;
+    memcpy(temp, pass, 32);
+    ix = (int *) temp;
 
-	for (i = 0; i < 8; i++) {
-		k = ntohl(*ix);
-		k ^= seed;
-		*ix++ = htonl(k);
-	}
+    for (i = 0; i < 8; i++) {
+        k = ntohl(*ix);
+        k ^= seed;
+        *ix++ = htonl(k);
+    }
 
-	md5_init(&ctx);
-	md5_append(&ctx, temp, 32);
-	md5_finish(&ctx, (unsigned char *) buf);
-
+    md5_init(&ctx);
+    md5_append(&ctx, temp, 32);
+    md5_finish(&ctx, (unsigned char *) buf);
 }
-

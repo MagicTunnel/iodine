@@ -21,4 +21,3 @@
 void login_calculate(char *, int, const char *, int);
 
 #endif
-

@@ -32,8 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "encoding.h"
 #include "base128.h"
+#include "encoding.h"
 
 #define BLKSIZE_RAW 7
 #define BLKSIZE_ENC 8
@@ -42,13 +42,12 @@
  * accent chars since they might readily be entered in normal use,
  * don't use 254-255 because of possible function overloading in DNS systems.
  */
-static const unsigned char cb128[] =
-	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	"\274\275\276\277"
-	"\300\301\302\303\304\305\306\307\310\311\312\313\314\315\316\317"
-	"\320\321\322\323\324\325\326\327\330\331\332\333\334\335\336\337"
-	"\340\341\342\343\344\345\346\347\350\351\352\353\354\355\356\357"
-	"\360\361\362\363\364\365\366\367\370\371\372\373\374\375";
+static const unsigned char cb128[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+                                     "\274\275\276\277"
+                                     "\300\301\302\303\304\305\306\307\310\311\312\313\314\315\316\317"
+                                     "\320\321\322\323\324\325\326\327\330\331\332\333\334\335\336\337"
+                                     "\340\341\342\343\344\345\346\347\350\351\352\353\354\355\356\357"
+                                     "\360\361\362\363\364\365\366\367\370\371\372\373\374\375";
 static unsigned char rev128[256];
 static int reverse_init = 0;
 
@@ -58,59 +57,41 @@ static int base128_handles_dots();
 static int base128_blksize_raw();
 static int base128_blksize_enc();
 
-static struct encoder base128_encoder =
-{
-	"Base128",
-	base128_encode,
-	base128_decode,
-	base128_handles_dots,
-	base128_handles_dots,
-	base128_blksize_raw,
-	base128_blksize_enc
-};
+static struct encoder base128_encoder = {
+    "Base128",           base128_encode,     base128_decode, base128_handles_dots, base128_handles_dots,
+    base128_blksize_raw, base128_blksize_enc};
 
-struct encoder
-*get_base128_encoder()
-{
-	return &base128_encoder;
+struct encoder *get_base128_encoder() {
+    return &base128_encoder;
 }
 
-static int
-base128_handles_dots()
-{
-	return 0;
+static int base128_handles_dots() {
+    return 0;
 }
 
-static int
-base128_blksize_raw()
-{
-	return BLKSIZE_RAW;
+static int base128_blksize_raw() {
+    return BLKSIZE_RAW;
 }
 
-static int
-base128_blksize_enc()
-{
-	return BLKSIZE_ENC;
+static int base128_blksize_enc() {
+    return BLKSIZE_ENC;
 }
 
-inline static void
-base128_reverse_init()
-{
-	int i;
-	unsigned char c;
+inline static void base128_reverse_init() {
+    int i;
+    unsigned char c;
 
-	if (!reverse_init) {
-		memset (rev128, 0, 256);
-		for (i = 0; i < 128; i++) {
-			c = cb128[i];
-			rev128[(int) c] = i;
-		}
-		reverse_init = 1;
-	}
+    if (!reverse_init) {
+        memset(rev128, 0, 256);
+        for (i = 0; i < 128; i++) {
+            c = cb128[i];
+            rev128[(int) c] = i;
+        }
+        reverse_init = 1;
+    }
 }
 
-static int
-base128_encode(char *buf, size_t *buflen, const void *data, size_t size)
+static int base128_encode(char *buf, size_t *buflen, const void *data, size_t size)
 /*
  * Fills *buf with max. *buflen characters, encoding size bytes of *data.
  *
@@ -121,90 +102,77 @@ base128_encode(char *buf, size_t *buflen, const void *data, size_t size)
  * sets *buflen to : #bytes encoded from data
  */
 {
-	unsigned char *ubuf = (unsigned char *) buf;
-	unsigned char *udata = (unsigned char *) data;
-	int iout = 0;	/* to-be-filled output char */
-	int iin = 0;	/* one more than last input byte that can be
-			   successfully decoded */
+    unsigned char *ubuf = (unsigned char *) buf;
+    unsigned char *udata = (unsigned char *) data;
+    int iout = 0; /* to-be-filled output char */
+    int iin = 0;  /* one more than last input byte that can be
+                     successfully decoded */
 
-	/* Note: Don't bother to optimize manually. GCC optimizes
-	   better(!) when using simplistic array indexing. */
+    /* Note: Don't bother to optimize manually. GCC optimizes
+       better(!) when using simplistic array indexing. */
 
-	while (1) {
-		if (iout >= *buflen || iin >= size)
-			break;
-		ubuf[iout] = cb128[((udata[iin] & 0xfe) >> 1)];
-		iout++;
+    while (1) {
+        if (iout >= *buflen || iin >= size)
+            break;
+        ubuf[iout] = cb128[((udata[iin] & 0xfe) >> 1)];
+        iout++;
 
-		if (iout >= *buflen || iin >= size) {
-			iout--; 	/* previous char is useless */
-			break;
-		}
-		ubuf[iout] = cb128[((udata[iin] & 0x01) << 6) |
-				   ((iin + 1 < size) ?
-				    ((udata[iin + 1] & 0xfc) >> 2) : 0)];
-		iin++;			/* 0 complete, iin=1 */
-		iout++;
+        if (iout >= *buflen || iin >= size) {
+            iout--; /* previous char is useless */
+            break;
+        }
+        ubuf[iout] = cb128[((udata[iin] & 0x01) << 6) | ((iin + 1 < size) ? ((udata[iin + 1] & 0xfc) >> 2) : 0)];
+        iin++; /* 0 complete, iin=1 */
+        iout++;
 
-		if (iout >= *buflen || iin >= size)
-			break;
-		ubuf[iout] = cb128[((udata[iin] & 0x03) << 5) |
-				   ((iin + 1 < size) ?
-				    ((udata[iin + 1] & 0xf8) >> 3) : 0)];
-		iin++;			/* 1 complete, iin=2 */
-		iout++;
+        if (iout >= *buflen || iin >= size)
+            break;
+        ubuf[iout] = cb128[((udata[iin] & 0x03) << 5) | ((iin + 1 < size) ? ((udata[iin + 1] & 0xf8) >> 3) : 0)];
+        iin++; /* 1 complete, iin=2 */
+        iout++;
 
-		if (iout >= *buflen || iin >= size)
-			break;
-		ubuf[iout] = cb128[((udata[iin] & 0x07) << 4) |
-				   ((iin + 1 < size) ?
-				    ((udata[iin + 1] & 0xf0) >> 4) : 0)];
-		iin++;			/* 2 complete, iin=3 */
-		iout++;
+        if (iout >= *buflen || iin >= size)
+            break;
+        ubuf[iout] = cb128[((udata[iin] & 0x07) << 4) | ((iin + 1 < size) ? ((udata[iin + 1] & 0xf0) >> 4) : 0)];
+        iin++; /* 2 complete, iin=3 */
+        iout++;
 
-		if (iout >= *buflen || iin >= size)
-			break;
-		ubuf[iout] = cb128[((udata[iin] & 0x0f) << 3) |
-				   ((iin + 1 < size) ?
-				    ((udata[iin + 1] & 0xe0) >> 5) : 0)];
-		iin++;			/* 3 complete, iin=4 */
-		iout++;
+        if (iout >= *buflen || iin >= size)
+            break;
+        ubuf[iout] = cb128[((udata[iin] & 0x0f) << 3) | ((iin + 1 < size) ? ((udata[iin + 1] & 0xe0) >> 5) : 0)];
+        iin++; /* 3 complete, iin=4 */
+        iout++;
 
-		if (iout >= *buflen || iin >= size)
-			break;
-		ubuf[iout] = cb128[((udata[iin] & 0x1f) << 2) |
-				   ((iin + 1 < size) ?
-				    ((udata[iin + 1] & 0xc0) >> 6) : 0)];
-		iin++;			/* 4 complete, iin=5 */
-		iout++;
+        if (iout >= *buflen || iin >= size)
+            break;
+        ubuf[iout] = cb128[((udata[iin] & 0x1f) << 2) | ((iin + 1 < size) ? ((udata[iin + 1] & 0xc0) >> 6) : 0)];
+        iin++; /* 4 complete, iin=5 */
+        iout++;
 
-		if (iout >= *buflen || iin >= size)
-			break;
-		ubuf[iout] = cb128[((udata[iin] & 0x3f) << 1) |
-				   ((iin + 1 < size) ?
-				    ((udata[iin + 1] & 0x80) >> 7) : 0)];
-		iin++;			/* 5 complete, iin=6 */
-		iout++;
+        if (iout >= *buflen || iin >= size)
+            break;
+        ubuf[iout] = cb128[((udata[iin] & 0x3f) << 1) | ((iin + 1 < size) ? ((udata[iin + 1] & 0x80) >> 7) : 0)];
+        iin++; /* 5 complete, iin=6 */
+        iout++;
 
-		if (iout >= *buflen || iin >= size)
-			break;
-		ubuf[iout] = cb128[(udata[iin] & 0x7f)];
-		iin++;			/* 6 complete, iin=7 */
-		iout++;
-	}
+        if (iout >= *buflen || iin >= size)
+            break;
+        ubuf[iout] = cb128[(udata[iin] & 0x7f)];
+        iin++; /* 6 complete, iin=7 */
+        iout++;
+    }
 
-	ubuf[iout] = '\0';
+    ubuf[iout] = '\0';
 
-	/* store number of bytes from data that was used */
-	*buflen = iin;
+    /* store number of bytes from data that was used */
+    *buflen = iin;
 
-	return iout;
+    return iout;
 }
 
 #define REV128(x) rev128[(int) (x)]
 
-static int
-base128_decode(void *buf, size_t *buflen, const char *str, size_t slen)
+static int base128_decode(void *buf, size_t *buflen, const char *str, size_t slen)
 /*
  * Fills *buf with max. *buflen bytes, decoded from slen chars in *str.
  * Decoding stops early when *str contains \0.
@@ -217,75 +185,61 @@ base128_decode(void *buf, size_t *buflen, const char *str, size_t slen)
  * return value    : #bytes filled in buf   (excluding \0)
  */
 {
-	unsigned char *ustr = (unsigned char *) str;
-	unsigned char *ubuf = (unsigned char *) buf;
-	int iout = 0;	/* to-be-filled output byte */
-	int iin = 0;	/* next input char to use in decoding */
+    unsigned char *ustr = (unsigned char *) str;
+    unsigned char *ubuf = (unsigned char *) buf;
+    int iout = 0; /* to-be-filled output byte */
+    int iin = 0;  /* next input char to use in decoding */
 
-	base128_reverse_init ();
+    base128_reverse_init();
 
-	/* Note: Don't bother to optimize manually. GCC optimizes
-	   better(!) when using simplistic array indexing. */
+    /* Note: Don't bother to optimize manually. GCC optimizes
+       better(!) when using simplistic array indexing. */
 
-	while (1) {
-		if (iout >= *buflen || iin + 1 >= slen ||
-		    str[iin] == '\0' || str[iin + 1] == '\0')
-			break;
-		ubuf[iout] = ((REV128(ustr[iin]) & 0x7f) << 1) |
-			     ((REV128(ustr[iin + 1]) & 0x40) >> 6);
-		iin++;  		/* 0 used up, iin=1 */
-		iout++;
+    while (1) {
+        if (iout >= *buflen || iin + 1 >= slen || str[iin] == '\0' || str[iin + 1] == '\0')
+            break;
+        ubuf[iout] = ((REV128(ustr[iin]) & 0x7f) << 1) | ((REV128(ustr[iin + 1]) & 0x40) >> 6);
+        iin++; /* 0 used up, iin=1 */
+        iout++;
 
-		if (iout >= *buflen || iin + 1 >= slen ||
-		    str[iin] == '\0' || str[iin + 1] == '\0')
-			break;
-		ubuf[iout] = ((REV128(ustr[iin]) & 0x3f) << 2) |
-			     ((REV128(ustr[iin + 1]) & 0x60) >> 5);
-		iin++;  		/* 1 used up, iin=2 */
-		iout++;
+        if (iout >= *buflen || iin + 1 >= slen || str[iin] == '\0' || str[iin + 1] == '\0')
+            break;
+        ubuf[iout] = ((REV128(ustr[iin]) & 0x3f) << 2) | ((REV128(ustr[iin + 1]) & 0x60) >> 5);
+        iin++; /* 1 used up, iin=2 */
+        iout++;
 
-		if (iout >= *buflen || iin + 1 >= slen ||
-		    str[iin] == '\0' || str[iin + 1] == '\0')
-			break;
-		ubuf[iout] = ((REV128(ustr[iin]) & 0x1f) << 3) |
-			     ((REV128(ustr[iin + 1]) & 0x70) >> 4);
-		iin++;  		/* 2 used up, iin=3 */
-		iout++;
+        if (iout >= *buflen || iin + 1 >= slen || str[iin] == '\0' || str[iin + 1] == '\0')
+            break;
+        ubuf[iout] = ((REV128(ustr[iin]) & 0x1f) << 3) | ((REV128(ustr[iin + 1]) & 0x70) >> 4);
+        iin++; /* 2 used up, iin=3 */
+        iout++;
 
-		if (iout >= *buflen || iin + 1 >= slen ||
-		    str[iin] == '\0' || str[iin + 1] == '\0')
-			break;
-		ubuf[iout] = ((REV128(ustr[iin]) & 0x0f) << 4) |
-			     ((REV128(ustr[iin + 1]) & 0x78) >> 3);
-		iin++;  		/* 3 used up, iin=4 */
-		iout++;
+        if (iout >= *buflen || iin + 1 >= slen || str[iin] == '\0' || str[iin + 1] == '\0')
+            break;
+        ubuf[iout] = ((REV128(ustr[iin]) & 0x0f) << 4) | ((REV128(ustr[iin + 1]) & 0x78) >> 3);
+        iin++; /* 3 used up, iin=4 */
+        iout++;
 
-		if (iout >= *buflen || iin + 1 >= slen ||
-		    str[iin] == '\0' || str[iin + 1] == '\0')
-			break;
-		ubuf[iout] = ((REV128(ustr[iin]) & 0x07) << 5) |
-			     ((REV128(ustr[iin + 1]) & 0x7c) >> 2);
-		iin++;  		/* 4 used up, iin=5 */
-		iout++;
+        if (iout >= *buflen || iin + 1 >= slen || str[iin] == '\0' || str[iin + 1] == '\0')
+            break;
+        ubuf[iout] = ((REV128(ustr[iin]) & 0x07) << 5) | ((REV128(ustr[iin + 1]) & 0x7c) >> 2);
+        iin++; /* 4 used up, iin=5 */
+        iout++;
 
-		if (iout >= *buflen || iin + 1 >= slen ||
-		    str[iin] == '\0' || str[iin + 1] == '\0')
-			break;
-		ubuf[iout] = ((REV128(ustr[iin]) & 0x03) << 6) |
-			     ((REV128(ustr[iin + 1]) & 0x7e) >> 1);
-		iin++;  		/* 5 used up, iin=6 */
-		iout++;
+        if (iout >= *buflen || iin + 1 >= slen || str[iin] == '\0' || str[iin + 1] == '\0')
+            break;
+        ubuf[iout] = ((REV128(ustr[iin]) & 0x03) << 6) | ((REV128(ustr[iin + 1]) & 0x7e) >> 1);
+        iin++; /* 5 used up, iin=6 */
+        iout++;
 
-		if (iout >= *buflen || iin + 1 >= slen ||
-		    str[iin] == '\0' || str[iin + 1] == '\0')
-			break;
-		ubuf[iout] = ((REV128(ustr[iin]) & 0x01) << 7) |
-			     ((REV128(ustr[iin + 1]) & 0x7f));
-		iin += 2;  		/* 6,7 used up, iin=8 */
-		iout++;
-	}
+        if (iout >= *buflen || iin + 1 >= slen || str[iin] == '\0' || str[iin + 1] == '\0')
+            break;
+        ubuf[iout] = ((REV128(ustr[iin]) & 0x01) << 7) | ((REV128(ustr[iin + 1]) & 0x7f));
+        iin += 2; /* 6,7 used up, iin=8 */
+        iout++;
+    }
 
-	ubuf[iout] = '\0';
+    ubuf[iout] = '\0';
 
-	return iout;
+    return iout;
 }

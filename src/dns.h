@@ -20,10 +20,7 @@
 
 #include "common.h"
 
-typedef enum {
-	QR_QUERY = 0,
-	QR_ANSWER = 1
-} qr_t;
+typedef enum { QR_QUERY = 0, QR_ANSWER = 1 } qr_t;
 
 extern int dnsc_use_edns0;
 
