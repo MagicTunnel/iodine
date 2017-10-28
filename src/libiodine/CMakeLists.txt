@@ -14,23 +14,5 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-cmake_minimum_required (VERSION 3.5)
-
-project (iodine)
-
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-include_directories (${CMAKE_CURRENT_BINARY_DIR})
-
-# TODO: use real revision
-add_definitions ("-DGITREVISION=\"xxx\"")
-add_definitions ("-D_GNU_SOURCE")
-
-set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -pedantic")
-
-add_subdirectory (utils)
-add_subdirectory (os)
-add_subdirectory (protocol)
-add_subdirectory (iodine)
-add_subdirectory (iodined)
-add_subdirectory (libiodine)
-add_subdirectory (tests)
+add_library (libiodine SHARED libiodine.c)
+set_target_properties (libiodine PROPERTIES OUTPUT_NAME "iodine")
